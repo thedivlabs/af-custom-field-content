@@ -1,6 +1,6 @@
 {
   "apiVersion": 3,
-  "name": "wpbs/acf-field-content",
+  "name": "af/acf-field-content",
   "title": "ACF Field Content",
   "description": "Display a layout element",
   "selectors": {
@@ -11,7 +11,19 @@
       "type": "string"
     }
   },
+  "styles": [
+    {
+      "Label": "Text",
+      "name": "text",
+      "isDefault": true
+    },
+    {
+      "Label": "Date",
+      "name": "date"
+    }
+  ],
   "supports": {
+    "layout": false,
     "color": {
       "background": true,
       "text": true,

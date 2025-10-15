@@ -41,6 +41,19 @@ class AF_Custom_Field_Content {
 		     . '</p></div>';
 	}
 
+	/**
+	 * Log to the browser console (admin + frontend)
+	 */
+	public static function console_log( $log_data ): void {
+		add_action( 'admin_footer', function () use ( $log_data ) {
+			echo '<script>console.log(' . wp_json_encode( $log_data ) . ')</script>';
+		} );
+
+		add_action( 'wp_footer', function () use ( $log_data ) {
+			echo '<script>console.log(' . wp_json_encode( $log_data ) . ')</script>';
+		} );
+	}
+
 	public static function init(): AF_Custom_Field_Content {
 		if ( self::$instance === null ) {
 			self::$instance = new self();

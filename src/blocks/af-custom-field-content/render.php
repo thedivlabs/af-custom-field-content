@@ -3,6 +3,10 @@
 $settings    = $attributes['af-acf-field-content'] ?? [];
 $field_key   = $settings['field'] ?? '';
 $date_format = $settings['dateFormat'] ?? '';
+$style       = 'text';
+if ( preg_match( '/is-style-([a-z0-9_-]+)/', ( $attributes['className'] ?? '' ), $matches ) ) {
+	$style = $matches[1]; // e.g. "date", "number", etc.
+}
 
 if ( ! $field_key ) {
 	return '';
@@ -19,7 +23,7 @@ if ( empty( $value ) || ! is_string( $value ) ) {
 }
 
 // handle date formatting if requested
-if ( $date_format && strtotime( $value ) !== false ) {
+if ( $date_format && $style == 'date' ) {
 	$value = date_i18n( $date_format, strtotime( $value ) );
 }
 

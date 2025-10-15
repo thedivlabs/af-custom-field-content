@@ -2,4 +2,15 @@
   display: inline-block;
   width: fit-content;
   max-width: 100%;
+
+  &.--full {
+    width: 100%;
+  }
+
+  &.--clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: var(--clamp);
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
