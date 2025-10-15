@@ -14,4 +14,8 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
+  p:empty {
+    display: none;
+  }
 }

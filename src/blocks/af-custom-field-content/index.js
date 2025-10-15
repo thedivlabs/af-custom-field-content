@@ -121,6 +121,7 @@ registerBlockType(metadata.name, {
         const style = attributes.className?.match(/is-style-(\w+)/)?.[1] || 'text';
 
         const isDate = style === 'date';
+        const isLink = !!settings?.link?.url;
 
         const postId = useSelect(
             (select) => select('core/editor').getCurrentPostId(),
@@ -198,6 +199,13 @@ registerBlockType(metadata.name, {
             output = fieldMap[field];
         }
 
+        let content = output;
+
+        if (isLink) {
+            const title = settings?.link?.title ?? 'Learn More';
+            content = `<a href="#" title="${title}">${content}</a>`;
+        }
+
         return <>
 
             <Link defaultValue={settings?.link} callback={(newVal) => updateSettings({link: newVal})}/>
@@ -260,7 +268,7 @@ registerBlockType(metadata.name, {
                     </Grid>
                 </PanelBody>
             </InspectorControls>
-            <ElementTagName {...blockProps} dangerouslySetInnerHTML={{__html: output}}/>
+            <ElementTagName {...blockProps} dangerouslySetInnerHTML={{__html: content}}/>
 
         </>
     },
@@ -269,13 +277,23 @@ registerBlockType(metadata.name, {
 
         const {'af-acf-field-content': settings = {}} = attributes;
 
+        const isLink = !!settings?.link?.url;
+
         const blockProps = useBlockProps.save({
             className: classNames(attributes),
         });
 
+        let content = '__FIELD_CONTENT__';
+
+        if (isLink) {
+            const title = settings?.link?.title ?? 'Learn More';
+            content = `<a href="#" title="${title}">${content}</a>`;
+        }
+
         const ElementTagName = ElementTag(settings);
 
-        return <ElementTagName {...blockProps} >{'__FIELD_CONTENT__'}</ElementTagName>
+        return <ElementTagName {...blockProps} dangerouslySetInnerHTML={{__html: content}}/>
+
     }
 })
 

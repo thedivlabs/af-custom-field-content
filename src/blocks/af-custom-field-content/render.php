@@ -28,6 +28,6 @@ if ( $date_format && $style == 'date' ) {
 }
 
 // replace placeholder with value
-$result = str_replace( "__FIELD_CONTENT__", esc_html( $value ), ( $content ?? '' ) );
+$result = str_replace( "__FIELD_CONTENT__", $value, ( $content ?? '' ) );
 
 echo $result;
