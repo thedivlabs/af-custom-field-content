@@ -100,7 +100,7 @@ registerBlockType(metadata.name, {
                 ? 'posts'
                 : postType === 'page'
                     ? 'pages'
-                    : postType; // for CPTs the slug usually matches
+                    : postType;
 
             apiFetch({path: `/wp/v2/${restBase}/${postId}`})
                 .then((post) => {
