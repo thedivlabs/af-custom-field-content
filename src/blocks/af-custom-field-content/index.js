@@ -28,12 +28,7 @@ const classNames = (attributes = {}) => {
 
 export const ELEMENT_TAG_OPTIONS = [
     {label: 'Default (<div>)', value: 'div'},
-    {label: '<header>', value: 'header'},
-    {label: '<main>', value: 'main'},
-    {label: '<section>', value: 'section'},
-    {label: '<article>', value: 'article'},
-    {label: '<aside>', value: 'aside'},
-    {label: '<footer>', value: 'footer'},
+    {label: '<span>', value: 'header'},
 ];
 
 function ElementTag(settings) {
