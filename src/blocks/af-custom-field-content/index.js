@@ -18,9 +18,7 @@ import './style.scss';
 const selector = 'af-acf-field-content';
 
 const classNames = (attributes = {}) => {
-
     const {'af-acf-field-content': settings} = attributes;
-
     return [
         selector,
     ].filter(x => x).join(' ');
@@ -32,31 +30,35 @@ export const ELEMENT_TAG_OPTIONS = [
 ];
 
 function ElementTag(settings) {
-
     return settings?.tag || 'div';
 }
 
-function flattenACF(obj, prefix = '') {
+function flattenACF(obj, meta = {}, prefix = '') {
     let result = {};
 
     Object.entries(obj || {}).forEach(([key, val]) => {
         const path = prefix ? `${prefix}.${key}` : key;
+        const fieldMeta = meta[key] || {};
 
-        if (typeof val === 'string') {
-            const trimmed = val.trim();
-            if (trimmed.length > 0) {
-                result[path] = trimmed;
+        if (typeof val === 'string' || typeof val === 'number') {
+            const strVal = String(val).trim();
+            if (strVal.length > 0) {
+                result[path] = {
+                    value: strVal,
+                    type: fieldMeta.type || typeof val
+                };
             }
         } else if (Array.isArray(val)) {
-            // skip arrays (repeaters/media IDs)
-            return;
+            return; // skip arrays
         } else if (val && typeof val === 'object') {
-            Object.assign(result, flattenACF(val, path));
+            const nested = flattenACF(val, meta[key]?.sub_fields || {}, path);
+            Object.assign(result, nested);
         }
     });
 
     return result;
 }
+
 
 registerBlockType(metadata.name, {
     apiVersion: 3,
@@ -69,7 +71,6 @@ registerBlockType(metadata.name, {
     edit: ({attributes, setAttributes}) => {
 
         const {'af-acf-field-content': settings = {}} = attributes;
-
         const {field = '', tag} = settings;
 
         const postId = useSelect(
@@ -97,10 +98,12 @@ registerBlockType(metadata.name, {
                     ? 'pages'
                     : postType;
 
-            apiFetch({path: `/wp/v2/${restBase}/${postId}`})
+            apiFetch({path: `/wp/v2/${restBase}/${postId}?context=edit`})
                 .then((post) => {
+                    console.log(post);
+                    console.log(post?._acf);
                     if (post.acf && typeof post.acf === 'object') {
-                        const flat = flattenACF(post?.acf ?? {});
+                        const flat = flattenACF(post?.acf ?? {}, post?._acf ?? {});
                         setFieldMap(flat);
                     } else {
                         setFieldMap({});
@@ -116,7 +119,10 @@ registerBlockType(metadata.name, {
         }, [postId, postType]);
 
         const options = useMemo(
-            () => Object.keys(fieldMap).map((s) => ({label: s, value: s})),
+            () => Object.entries(fieldMap).map(([name, data]) => ({
+                label: `${name} (${data.type})`,
+                value: name
+            })),
             [fieldMap]
         );
 
@@ -131,11 +137,21 @@ registerBlockType(metadata.name, {
             [attributes, setAttributes]
         );
 
+        const isDateField = ['date_picker', 'date_time_picker'].includes(settings?.type);
+
         const blockProps = useBlockProps({
             className: classNames(attributes)
         });
 
         const ElementTagName = ElementTag(settings);
+
+        let output = fieldMap[field]?.value ?? 'ACF Content';
+
+        console.log(fieldMap);
+
+        if (isDateField && settings.dateFormat) {
+            output = dateI18n(settings.dateFormat, output);
+        }
 
         return <>
 
@@ -158,12 +174,15 @@ registerBlockType(metadata.name, {
                             label="Select ACF Field"
                             value={field}
                             options={options}
-                            onChange={(newVal) => updateSettings({field: newVal})}
+                            onChange={(newVal) => updateSettings({
+                                field: newVal,
+                                type: fieldMap[newVal]?.type || 'text'
+                            })}
                             allowReset
                             __next40pxDefaultSize
                             __nextHasNoMarginBottom
                         />
-                        <SelectControl
+                        {isDateField ? <SelectControl
                             label="Date Format"
                             value={settings?.dateFormat ?? ''}
                             options={[
@@ -172,21 +191,17 @@ registerBlockType(metadata.name, {
                                 {label: 'MM/DD/YYYY', value: 'm/d/Y'},
                                 {label: 'Month DD, YYYY', value: 'F j, Y'},
                                 {label: 'DD.MM.YYYY', value: 'd.m.Y'},
+                                {label: 'Month DD, YYYY h:mm a', value: 'F j, Y g:i a'},
+                                {label: 'YYYY-MM-DD HH:mm', value: 'Y-m-d H:i'},
                             ]}
                             onChange={(newVal) => updateSettings({dateFormat: newVal})}
                             __next40pxDefaultSize
                             __nextHasNoMarginBottom
-                        />
+                        /> : null}
                     </Grid>
                 </PanelBody>
             </InspectorControls>
-            <ElementTagName {...blockProps} >
-                {field && fieldMap[field]
-                    ? (settings.dateFormat
-                        ? dateI18n(settings.dateFormat, fieldMap[field])
-                        : fieldMap[field])
-                    : 'ACF Content'}
-            </ElementTagName>
+            <ElementTagName {...blockProps} dangerouslySetInnerHTML={{ __html: output }} />
 
         </>
     },
@@ -204,5 +219,3 @@ registerBlockType(metadata.name, {
         return <ElementTagName {...blockProps} >{'__FIELD_CONTENT__'}</ElementTagName>
     }
 })
-
-
