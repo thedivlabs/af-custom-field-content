@@ -28,7 +28,7 @@ const classNames = (attributes = {}) => {
 
 export const ELEMENT_TAG_OPTIONS = [
     {label: 'Default (<div>)', value: 'div'},
-    {label: '<span>', value: 'header'},
+    {label: '<span>', value: 'span'},
 ];
 
 function ElementTag(settings) {
