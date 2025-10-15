@@ -1,0 +1,13 @@
+*
+/node_modules/
+
+!/package.json
+!/.gitignore
+!/README.md
+!/af-custom-field-content/
+!/af-custom-field-content/**
+!/src/
+!/src/**
+
+/af-custom-field-content/blocks/
+/af-custom-field-content/blocks/**

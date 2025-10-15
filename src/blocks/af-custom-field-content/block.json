@@ -1,0 +1,49 @@
+{
+  "apiVersion": 3,
+  "name": "wpbs/acf-field-content",
+  "title": "ACF Field Content",
+  "description": "Display a layout element",
+  "selectors": {
+    "root": ".wpbs-acf-field-content"
+  },
+  "attributes": {
+    "uniqueId": {
+      "type": "string"
+    }
+  },
+  "supports": {
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true,
+      "gradients": true
+    },
+    "spacing": {
+      "blockGap": [
+        "horizontal",
+        "vertical"
+      ],
+      "padding": true,
+      "margin": true
+    },
+    "shadow": true,
+    "__experimentalBorder": {
+      "size": true,
+      "color": true,
+      "radius": true
+    },
+    "typography": {
+      "__experimentalFontFamily": true,
+      "__experimentalFontWeight": true,
+      "textAlign": true,
+      "fontSize": true,
+      "lineHeight": true
+    }
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./block.css",
+  "icon": "editor-kitchensink",
+  "render": "file:./render.php"
+}
+
+

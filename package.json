@@ -1,0 +1,22 @@
+{
+  "name": "af-custom-field-content",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "wp-scripts start --webpack-src-dir=./src/blocks --output-path=./af-custom-field-content/blocks --experimental-modules",
+    "build": "wp-scripts build --webpack-src-dir=./src/blocks --output-path=./af-custom-field-content/blocks --experimental-modules"
+  },
+  "devDependencies": {
+    "@wordpress/block-editor": "^15.5.0",
+    "@wordpress/blocks": "^15.5.0",
+    "@wordpress/components": "^27.6.0",
+    "@wordpress/scripts": "^27.1.0",
+    "sass": "^1.77.0"
+  },
+  "dependencies": {
+    "@wordpress/compose": "^7.32.0",
+    "@wordpress/data": "^10.32.0",
+    "@wordpress/element": "^6.32.0",
+    "@wordpress/interactivity": "^6.32.0",
+    "lodash": "^4.17.21"
+  }
+}
