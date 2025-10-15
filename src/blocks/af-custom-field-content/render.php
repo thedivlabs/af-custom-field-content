@@ -12,7 +12,7 @@ if ( ! $field_key ) {
 $field_name = str_replace( '.', '_', $field_key );
 
 // fetch value directly from ACF
-$value = get_field( 'wpbs_' . $field_name, get_the_ID() );
+$value = get_field( $field_name, get_the_ID() );
 
 if ( empty( $value ) || ! is_string( $value ) ) {
 	return '';
