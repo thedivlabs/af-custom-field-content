@@ -4,7 +4,7 @@
   "title": "ACF Field Content",
   "description": "Display a layout element",
   "selectors": {
-    "root": ".wpbs-acf-field-content"
+    "root": ".af-acf-field-content"
   },
   "attributes": {
     "uniqueId": {

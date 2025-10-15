@@ -15,11 +15,11 @@ import {dateI18n} from '@wordpress/date';
 import './style.scss';
 
 
-const selector = 'wpbs-acf-field-content';
+const selector = 'af-acf-field-content';
 
 const classNames = (attributes = {}) => {
 
-    const {'wpbs-acf-field-content': settings} = attributes;
+    const {'af-acf-field-content': settings} = attributes;
 
     return [
         selector,
@@ -67,13 +67,13 @@ registerBlockType(metadata.name, {
     apiVersion: 3,
     attributes: {
         ...metadata.attributes,
-        'wpbs-acf-field-content': {
+        'af-acf-field-content': {
             type: 'object'
         }
     },
     edit: ({attributes, setAttributes}) => {
 
-        const {'wpbs-acf-field-content': settings = {}} = attributes;
+        const {'af-acf-field-content': settings = {}} = attributes;
 
         const {field = '', tag} = settings;
 
@@ -96,10 +96,16 @@ registerBlockType(metadata.name, {
             setLoading(true);
             setError(null);
 
-            apiFetch({path: `/wp/v2/${postType}/${postId}`})
+            const restBase = postType === 'post'
+                ? 'posts'
+                : postType === 'page'
+                    ? 'pages'
+                    : postType; // for CPTs the slug usually matches
+
+            apiFetch({path: `/wp/v2/${restBase}/${postId}`})
                 .then((post) => {
                     if (post.acf && typeof post.acf === 'object') {
-                        const flat = flattenACF(post?.acf?.wpbs ?? {});
+                        const flat = flattenACF(post?.acf ?? {});
                         setFieldMap(flat);
                     } else {
                         setFieldMap({});
@@ -122,10 +128,10 @@ registerBlockType(metadata.name, {
         const updateSettings = useCallback(
             (newValue) => {
                 const result = {
-                    ...(attributes?.['wpbs-acf-field-content'] ?? {}),
+                    ...(attributes?.['af-acf-field-content'] ?? {}),
                     ...newValue,
                 };
-                setAttributes({'wpbs-acf-field-content': result});
+                setAttributes({'af-acf-field-content': result});
             },
             [attributes, setAttributes]
         );
@@ -192,7 +198,7 @@ registerBlockType(metadata.name, {
     save: (props) => {
         const {attributes} = props;
 
-        const {'wpbs-acf-field-content': settings = {}} = attributes;
+        const {'af-acf-field-content': settings = {}} = attributes;
 
         const blockProps = useBlockProps.save({
             className: classNames(attributes),

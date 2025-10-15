@@ -1,6 +1,6 @@
 <?php
 
-$settings    = $attributes['wpbs-acf-field-content'] ?? [];
+$settings    = $attributes['af-acf-field-content'] ?? [];
 $field_key   = $settings['field'] ?? '';
 $date_format = $settings['dateFormat'] ?? '';
 
