@@ -13,8 +13,10 @@
     "sass": "^1.77.0"
   },
   "dependencies": {
+    "@wordpress/api-fetch": "^7.32.0",
     "@wordpress/compose": "^7.32.0",
     "@wordpress/data": "^10.32.0",
+    "@wordpress/date": "^5.32.0",
     "@wordpress/element": "^6.32.0",
     "@wordpress/interactivity": "^6.32.0",
     "lodash": "^4.17.21"

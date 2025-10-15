@@ -40,9 +40,9 @@
       "lineHeight": true
     }
   },
-  "editorScript": "file:./block.js",
-  "style": "file:./block.css",
-  "icon": "editor-kitchensink",
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "icon": "clipboard",
   "render": "file:./render.php"
 }
 

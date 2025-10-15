@@ -4,28 +4,41 @@ import {
 } from "@wordpress/block-editor"
 import {registerBlockType} from "@wordpress/blocks"
 import metadata from "./block.json"
-import {ElementTagSettings, ElementTag, ELEMENT_TAG_ATTRIBUTES} from "Components/ElementTag";
 import {
     __experimentalGrid as Grid,
     PanelBody, ComboboxControl, SelectControl,
 } from "@wordpress/components";
-import {withStyle, withStyleSave, STYLE_ATTRIBUTES} from "Components/Style.js";
 import {useState, useEffect, useMemo, useCallback} from '@wordpress/element';
 import {useSelect} from '@wordpress/data';
 import apiFetch from '@wordpress/api-fetch';
 import {dateI18n} from '@wordpress/date';
+import './style.scss';
 
 
 const selector = 'wpbs-acf-field-content';
 
-const classNames = (attributes = {}, editor = false) => {
+const classNames = (attributes = {}) => {
 
     const {'wpbs-acf-field-content': settings} = attributes;
 
     return [
         selector,
-        ' w-full block relative',
     ].filter(x => x).join(' ');
+}
+
+export const ELEMENT_TAG_OPTIONS = [
+    {label: 'Default (<div>)', value: 'div'},
+    {label: '<header>', value: 'header'},
+    {label: '<main>', value: 'main'},
+    {label: '<section>', value: 'section'},
+    {label: '<article>', value: 'article'},
+    {label: '<aside>', value: 'aside'},
+    {label: '<footer>', value: 'footer'},
+];
+
+function ElementTag(settings) {
+
+    return settings?.tag || 'div';
 }
 
 function flattenACF(obj, prefix = '') {
@@ -54,17 +67,15 @@ registerBlockType(metadata.name, {
     apiVersion: 3,
     attributes: {
         ...metadata.attributes,
-        ...STYLE_ATTRIBUTES,
-        ...ELEMENT_TAG_ATTRIBUTES,
         'wpbs-acf-field-content': {
             type: 'object'
         }
     },
-    edit: withStyle(({attributes, setAttributes, clientId, setStyle, styleClassNames}) => {
+    edit: ({attributes, setAttributes}) => {
 
         const {'wpbs-acf-field-content': settings = {}} = attributes;
 
-        const {field = ''} = settings;
+        const {field = '', tag} = settings;
 
         const postId = useSelect(
             (select) => select('core/editor').getCurrentPostId(),
@@ -120,15 +131,25 @@ registerBlockType(metadata.name, {
         );
 
         const blockProps = useBlockProps({
-            className: styleClassNames(classNames(attributes, true))
+            className: classNames(attributes)
         });
 
-        const ElementTagName = ElementTag(attributes);
+        const ElementTagName = ElementTag(settings);
 
         return <>
 
-
-            <ElementTagSettings attributes={attributes} setAttributes={setAttributes}/>
+            <InspectorControls group="advanced">
+                <Grid columns={1} columnGap={15} rowGap={20} style={{paddingTop: '20px'}}>
+                    <SelectControl
+                        value={tag}
+                        label={'HTML element'}
+                        options={ELEMENT_TAG_OPTIONS}
+                        onChange={(newVal) => updateSettings({tag: newVal})}
+                        __next40pxDefaultSize
+                        __nextHasNoMarginBottom
+                    />
+                </Grid>
+            </InspectorControls>
             <InspectorControls group="styles">
                 <PanelBody initialOpen={true}>
                     <Grid columns={1} columnGap={15} rowGap={20} style={{paddingTop: '20px'}}>
@@ -143,8 +164,9 @@ registerBlockType(metadata.name, {
                         />
                         <SelectControl
                             label="Date Format"
-                            value={settings.dateFormat ?? 'Y-m-d'}
+                            value={settings?.dateFormat ?? ''}
                             options={[
+                                {label: 'Select', value: ''},
                                 {label: 'YYYY-MM-DD', value: 'Y-m-d'},
                                 {label: 'MM/DD/YYYY', value: 'm/d/Y'},
                                 {label: 'Month DD, YYYY', value: 'F j, Y'},
@@ -166,21 +188,20 @@ registerBlockType(metadata.name, {
             </ElementTagName>
 
         </>
-    }),
-    save: withStyleSave((props) => {
-        const {attributes, styleClassNames} = props;
+    },
+    save: (props) => {
+        const {attributes} = props;
 
         const {'wpbs-acf-field-content': settings = {}} = attributes;
 
         const blockProps = useBlockProps.save({
-            className: styleClassNames(classNames(attributes)),
-            ...(props.attributes?.['wpbs-props'] ?? {})
+            className: classNames(attributes),
         });
 
-        const ElementTagName = ElementTag(attributes);
+        const ElementTagName = ElementTag(settings);
 
         return <ElementTagName {...blockProps} >{'__FIELD_CONTENT__'}</ElementTagName>
-    })
+    }
 })
 
 
