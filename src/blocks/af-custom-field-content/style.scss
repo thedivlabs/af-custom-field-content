@@ -8,7 +8,9 @@
     display: block;
   }
 
-  &.--clamp {
+  &.--clamp > span,
+  &.--clamp > a
+  {
     display: -webkit-box;
     -webkit-line-clamp: var(--clamp);
     -webkit-box-orient: vertical;
