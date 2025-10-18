@@ -149,8 +149,6 @@ export function ReferencePost({value, onChange}) {
                             __nextHasNoMarginBottom
                         />
 
-                        {isResolving && <Spinner/>}
-
                         <SelectControl
                             label={__('Select Post', 'AF')}
                             value={value?.id}
