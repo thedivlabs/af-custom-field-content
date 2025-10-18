@@ -1,17 +1,12 @@
-// ReferencePost.js
 import {useState, useMemo, useCallback} from '@wordpress/element';
 import {useSelect} from '@wordpress/data';
 import {
-    BaseControl,
-    Button,
-    Popover,
     SelectControl,
     ComboboxControl,
     Spinner,
     __experimentalGrid as Grid,
 } from '@wordpress/components';
 import {__} from '@wordpress/i18n';
-import {Icon, archive} from "@wordpress/icons";
 
 export function ReferencePost({value, onChange}) {
     const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +19,7 @@ export function ReferencePost({value, onChange}) {
     }, []);
 
     // Determine current type (fallback to "post")
-    const currentType = value?.type || 'post';
+    const currentType = value?.type || '';
 
     // Fetch posts for the selected type
     const {posts, isResolving} = useSelect(
@@ -87,78 +82,30 @@ export function ReferencePost({value, onChange}) {
         [onChange, currentType]
     );
 
-    const handleClear = useCallback(() => {
-        onChange({id: null, type: null});
-        setSearch('');
-    }, [onChange]);
-
-    const selectedLabel = useMemo(() => {
-        if (!value?.id) return __('Select a post…', 'text-domain');
-
-        const match = posts.find((p) => p.id === value.id);
-        const title = match?.title?.rendered || __('(no title)', 'text-domain');
-
-        const typeObj = postTypes.find((pt) => pt.slug === value?.type);
-        const typeLabel = typeObj ? typeObj.labels.singular_name : currentType;
-
-        return `${title} (${typeLabel})`;
-    }, [value, posts, postTypes, currentType]);
-
 
     return (
-        <BaseControl label={__('Reference Post', 'text-domain')}>
-            <div style={{display: 'flex', gap: '8px'}}>
-                <Button
-                    variant="secondary"
-                    onClick={() => setIsOpen((prev) => !prev)}
-                    aria-expanded={isOpen}
-                    __next40pxDefaultSize
-                    __nextHasNoMarginBottom
-                    style={{flexGrow: 1}}
-                >
-                    <Icon icon={archive} style={{width: '1em', height: '1em', marginRight: '8px'}}/>
-                    {[selectedLabel]}
-                </Button>
-                <Button
-                    variant="tertiary"
-                    isDestructive
-                    onClick={handleClear}
-                    __next40pxDefaultSize
-                    __nextHasNoMarginBottom
-                >
-                    {__('Clear', 'AF')}
-                </Button>
-            </div>
-            {isOpen && (
-                <Popover
-                    placement="bottom-start"
-                    onClose={() => setIsOpen(false)}
-                    focusOnMount="container"
-                >
-                    <Grid columns={2} columnGap={15}>
-                        <SelectControl
-                            label={__('Post Type', 'text-domain')}
-                            value={currentType}
-                            options={postTypeOptions}
-                            onChange={handleTypeChange}
-                            __next40pxDefaultSize
-                            __nextHasNoMarginBottom
-                        />
+        <Grid columns={1} columnGap={15} rowGap={20}>
+            <SelectControl
+                label={__('Post Type', 'text-domain')}
+                value={currentType}
+                options={[
+                    {label: 'Select', value: ''},
+                    ...postTypeOptions]
+                }
+                onChange={handleTypeChange}
+                __next40pxDefaultSize
+                __nextHasNoMarginBottom
+            />
 
-                        {isResolving && <Spinner/>}
-
-                        <ComboboxControl
-                            label={__('Select Post', 'text-domain')}
-                            value={value?.id}
-                            options={postOptions}
-                            onChange={handlePostChange}
-                            onFilterValueChange={setSearch}
-                            __next40pxDefaultSize
-                            __nextHasNoMarginBottom
-                        />
-                    </Grid>
-                </Popover>
-            )}
-        </BaseControl>
+            <ComboboxControl
+                label={__('Select Post', 'text-domain')}
+                value={value?.id}
+                options={postOptions}
+                onChange={handlePostChange}
+                onFilterValueChange={setSearch}
+                __next40pxDefaultSize
+                __nextHasNoMarginBottom
+            />
+        </Grid>
     );
 }
