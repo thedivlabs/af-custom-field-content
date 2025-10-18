@@ -20,7 +20,6 @@ export function ReferencePost({value, onChange}) {
     // Get all post types that are viewable
     const postTypes = useSelect((select) => {
         const types = select('core').getPostTypes({per_page: -1}) || [];
-        console.log(types);
         return types.filter((pt) => pt.viewable && !['attachment'].includes(pt.slug));
     }, []);
 
