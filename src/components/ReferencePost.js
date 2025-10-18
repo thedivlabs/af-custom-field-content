@@ -20,11 +20,12 @@ export function ReferencePost({value, onChange}) {
     // Get all post types that are viewable
     const postTypes = useSelect((select) => {
         const types = select('core').getPostTypes({per_page: -1}) || [];
-        return types.filter((pt) => pt.viewable && !['media'].includes(pt.name));
+        console.log(types);
+        return types.filter((pt) => pt.viewable && !['attachment'].includes(pt.name));
     }, []);
 
     // Determine current type (fallback to "post")
-    const currentType = value?.type || 'post';
+    const currentType = value?.type || '';
 
     // Fetch posts for the selected type
     const {posts, isResolving} = useSelect(
@@ -56,33 +57,37 @@ export function ReferencePost({value, onChange}) {
     );
 
     const postTypeOptions = useMemo(
-        () =>
-            postTypes.map((pt) => ({
+        () => [
+            {label: __('Select', 'AF'), value: ''},
+            ...postTypes.map((pt) => ({
                 label: pt.labels.singular_name,
                 value: pt.slug,
             })),
+        ],
         [postTypes]
     );
 
     const postOptions = useMemo(
-        () =>
-            posts.map((p) => ({
-                label: p.title?.rendered || __('(no title)', 'text-domain'),
-                value: p.id,
+        () => [
+            {label: __('Select', 'AF'), value: ''},
+            ...posts.map((p) => ({
+                label: p.title?.rendered || __('(no title)', 'AF'),
+                value: String(p.id),
             })),
+        ],
         [posts]
     );
 
     const handleTypeChange = useCallback(
         (newType) => {
-            onChange({id: null, type: newType});
+            onChange({id: '', type: newType || ''});
         },
         [onChange]
     );
 
     const handlePostChange = useCallback(
         (postId) => {
-            onChange({id: postId, type: currentType});
+            onChange({id: postId || '', type: currentType});
         },
         [onChange, currentType]
     );
@@ -93,10 +98,10 @@ export function ReferencePost({value, onChange}) {
     }, [onChange]);
 
     const selectedLabel = useMemo(() => {
-        if (!value?.id) return __('Select a post…', 'text-domain');
+        if (!value?.id) return __('Select a post…', 'AF');
 
         const match = posts.find((p) => p.id === value.id);
-        const title = match?.title?.rendered || __('(no title)', 'text-domain');
+        const title = match?.title?.rendered || __('(no title)', 'AF');
 
         const typeObj = postTypes.find((pt) => pt.slug === value?.type);
         const typeLabel = typeObj ? typeObj.labels.singular_name : currentType;
@@ -106,7 +111,7 @@ export function ReferencePost({value, onChange}) {
 
 
     return (
-        <BaseControl label={__('Reference Post', 'text-domain')}>
+        <BaseControl label={__('Reference Post', 'AF')}>
             <div style={{display: 'flex', gap: '8px'}}>
                 <Button
                     variant="secondary"
@@ -137,7 +142,7 @@ export function ReferencePost({value, onChange}) {
                 >
                     <Grid columns={1} rowGap={10} style={{width: '300px', maxWidth: '100%', padding: '16px'}}>
                         <SelectControl
-                            label={__('Post Type', 'text-domain')}
+                            label={__('Post Type', 'AF')}
                             value={currentType}
                             options={postTypeOptions}
                             onChange={handleTypeChange}
@@ -147,12 +152,11 @@ export function ReferencePost({value, onChange}) {
 
                         {isResolving && <Spinner/>}
 
-                        <ComboboxControl
-                            label={__('Select Post', 'text-domain')}
+                        <SelectControl
+                            label={__('Select Post', 'AF')}
                             value={value?.id}
                             options={postOptions}
                             onChange={handlePostChange}
-                            onFilterValueChange={setSearch}
                             __next40pxDefaultSize
                             __nextHasNoMarginBottom
                         />
