@@ -116,7 +116,7 @@ export function ReferencePost({value, onChange}) {
                     __nextHasNoMarginBottom
                     style={{flexGrow: 1}}
                 >
-                    <Icon icon={archive} style={{ width: '15px', height: '15px' }} />
+                    <Icon icon={archive} style={{width: '1em', height: '1em', marginRight: '8px'}}/>
                     {[selectedLabel]}
                 </Button>
                 <Button
