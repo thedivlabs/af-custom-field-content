@@ -6,8 +6,6 @@ import {
     Button,
     Popover,
     SelectControl,
-    ComboboxControl,
-    Spinner,
     __experimentalGrid as Grid,
 } from '@wordpress/components';
 import {__} from '@wordpress/i18n';
@@ -147,6 +145,7 @@ export function ReferencePost({value, onChange}) {
                             onChange={handleTypeChange}
                             __next40pxDefaultSize
                             __nextHasNoMarginBottom
+                            disabled={!!isResolving}
                         />
 
                         <SelectControl
@@ -156,6 +155,7 @@ export function ReferencePost({value, onChange}) {
                             onChange={handlePostChange}
                             __next40pxDefaultSize
                             __nextHasNoMarginBottom
+                            disabled={!!isResolving}
                         />
                     </Grid>
                 </Popover>
