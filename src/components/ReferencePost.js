@@ -21,7 +21,7 @@ export function ReferencePost({value, onChange}) {
     const postTypes = useSelect((select) => {
         const types = select('core').getPostTypes({per_page: -1}) || [];
         console.log(types);
-        return types.filter((pt) => pt.viewable && !['attachment'].includes(pt.name));
+        return types.filter((pt) => pt.viewable && !['attachment'].includes(pt.slug));
     }, []);
 
     // Determine current type (fallback to "post")
