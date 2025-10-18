@@ -18,6 +18,7 @@ import { useSelect } from "@wordpress/data";
 import { dateI18n } from "@wordpress/date";
 import apiFetch from "@wordpress/api-fetch";
 import "./style.scss";
+import { ReferencePost } from "Components/ReferencePost";
 import { Link } from "Components/Link";
 import { ElementTag, ElementTagControl } from "Components/ElementTag.js";
 
@@ -68,7 +69,7 @@ registerBlockType(metadata.name, {
     },
     edit: ({ attributes, setAttributes }) => {
         const { "af-acf-field-content": settings = {} } = attributes;
-        const { field = "", tag, link, referencePost } = settings;
+        const { field = "", tag, link, reference } = settings;
 
         const style =
             attributes.className?.match(/is-style-(\w+)/)?.[1] || "text";
@@ -86,8 +87,8 @@ registerBlockType(metadata.name, {
         );
 
         // Fallback: use referencePost if editing a template (no postId)
-        const targetPostId = referencePost?.id || postId;
-        const targetPostType = referencePost?.type ?? postType;
+        const targetPostId = reference?.id || postId;
+        const targetPostType = reference?.type ?? postType;
 
         // Flatten ACF fields from target post
         const [fieldMap, setFieldMap] = useState({});
@@ -131,49 +132,6 @@ registerBlockType(metadata.name, {
                 })),
             [fieldMap]
         );
-
-        // Reference post ComboBox
-        const [search, setSearch] = useState("");
-
-        const { posts, isResolving } = useSelect(
-            (select) => {
-                const query = {
-                    search,
-                    per_page: 20,
-                    order: "desc",
-                    orderby: "date",
-                    status: "publish",
-                };
-
-                const postResults =
-                    select("core").getEntityRecords("postType", "post", query) ||
-                    [];
-                const pageResults =
-                    select("core").getEntityRecords("postType", "page", query) ||
-                    [];
-
-                return {
-                    posts: [...postResults, ...pageResults],
-                    isResolving:
-                        select("core/data").isResolving("core", "getEntityRecords", [
-                            "postType",
-                            "post",
-                            query,
-                        ]) ||
-                        select("core/data").isResolving("core", "getEntityRecords", [
-                            "postType",
-                            "page",
-                            query,
-                        ]),
-                };
-            },
-            [search]
-        );
-
-        const referenceOptions = posts.map((p) => ({
-            label: p.title?.rendered || `(${p.type} #${p.id})`,
-            value: JSON.stringify({ id: p.id, type: p.type }), // serialize for ComboBox
-        }));
 
         const updateSettings = useCallback(
             (newValue) => {
@@ -249,32 +207,6 @@ registerBlockType(metadata.name, {
                                 __next40pxDefaultSize
                                 __nextHasNoMarginBottom
                             />
-                            <ComboboxControl
-                                label="Reference Post/Page"
-                                value={
-                                    referencePost
-                                        ? JSON.stringify(referencePost)
-                                        : ""
-                                }
-                                options={[
-                                    { label: "Select", value: "" },
-                                    ...referenceOptions,
-                                ]}
-                                onChange={(newVal) => {
-                                    const parsed =
-                                        newVal && newVal !== ""
-                                            ? JSON.parse(newVal)
-                                            : null;
-                                    updateSettings({ referencePost: parsed });
-                                }}
-                                onFilterValueChange={(newSearch) =>
-                                    setSearch(newSearch)
-                                }
-                                allowReset
-                                __next40pxDefaultSize
-                                __nextHasNoMarginBottom
-                            />
-                            {isResolving && <Spinner />}
                             {isDate ? (
                                 <SelectControl
                                     label="Date Format"
@@ -299,6 +231,9 @@ registerBlockType(metadata.name, {
                                     __nextHasNoMarginBottom
                                 />
                             ) : null}
+
+                            <ReferencePost value={reference} onChange={(newValue)=>updateSettings({reference: newValue})} />
+
                             <Grid columns={2} columnGap={15} rowGap={20}>
                                 <NumberControl
                                     label="Line Clamp"
