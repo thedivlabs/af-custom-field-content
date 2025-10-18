@@ -11,7 +11,7 @@ import {
     __experimentalGrid as Grid,
 } from '@wordpress/components';
 import {__} from '@wordpress/i18n';
-import {Icon, postContent} from "@wordpress/icons";
+import {Icon, archive} from "@wordpress/icons";
 
 export function ReferencePost({value, onChange}) {
     const [isOpen, setIsOpen] = useState(false);
@@ -94,9 +94,16 @@ export function ReferencePost({value, onChange}) {
 
     const selectedLabel = useMemo(() => {
         if (!value?.id) return __('Select a post…', 'text-domain');
+
         const match = posts.find((p) => p.id === value.id);
-        return match?.title?.rendered || __('(no title)', 'text-domain');
-    }, [value, posts]);
+        const title = match?.title?.rendered || __('(no title)', 'text-domain');
+
+        const typeObj = postTypes.find((pt) => pt.slug === value?.type);
+        const typeLabel = typeObj ? typeObj.labels.singular_name : currentType;
+
+        return `${title} (${typeLabel})`;
+    }, [value, posts, postTypes, currentType]);
+
 
     return (
         <BaseControl label={__('Reference Post', 'text-domain')}>
@@ -109,7 +116,7 @@ export function ReferencePost({value, onChange}) {
                     __nextHasNoMarginBottom
                     style={{flexGrow: 1}}
                 >
-                    <Icon icon={postContent} />
+                    <Icon icon={archive} style={{ width: '15px', height: '15px' }} />
                     {[selectedLabel]}
                 </Button>
                 <Button
