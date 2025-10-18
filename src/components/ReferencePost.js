@@ -138,6 +138,8 @@ export function ReferencePost({ value, onChange }) {
                             variant="tertiary"
                             isDestructive
                             onClick={handleClear}
+                            __next40pxDefaultSize
+                            __nextHasNoMarginBottom
                         >
                             {__('Clear', 'AF')}
                         </Button>
