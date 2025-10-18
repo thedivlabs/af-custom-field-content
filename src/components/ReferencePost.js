@@ -1,6 +1,6 @@
 // ReferencePost.js
-import { useState, useMemo, useCallback } from '@wordpress/element';
-import { useSelect } from '@wordpress/data';
+import {useState, useMemo, useCallback} from '@wordpress/element';
+import {useSelect} from '@wordpress/data';
 import {
     BaseControl,
     Button,
@@ -8,16 +8,18 @@ import {
     SelectControl,
     ComboboxControl,
     Spinner,
+    __experimentalGrid as Grid,
 } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
+import {__} from '@wordpress/i18n';
+import {Icon, postContent} from "@wordpress/icons";
 
-export function ReferencePost({ value, onChange }) {
+export function ReferencePost({value, onChange}) {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
 
     // Get all post types that are viewable
     const postTypes = useSelect((select) => {
-        const types = select('core').getPostTypes({ per_page: -1 }) || [];
+        const types = select('core').getPostTypes({per_page: -1}) || [];
         return types.filter((pt) => pt.viewable);
     }, []);
 
@@ -25,9 +27,9 @@ export function ReferencePost({ value, onChange }) {
     const currentType = value?.type || 'post';
 
     // Fetch posts for the selected type
-    const { posts, isResolving } = useSelect(
+    const {posts, isResolving} = useSelect(
         (select) => {
-            if (!currentType) return { posts: [], isResolving: false };
+            if (!currentType) return {posts: [], isResolving: false};
 
             const query = {
                 search,
@@ -73,20 +75,20 @@ export function ReferencePost({ value, onChange }) {
 
     const handleTypeChange = useCallback(
         (newType) => {
-            onChange({ id: null, type: newType });
+            onChange({id: null, type: newType});
         },
         [onChange]
     );
 
     const handlePostChange = useCallback(
         (postId) => {
-            onChange({ id: postId, type: currentType });
+            onChange({id: postId, type: currentType});
         },
         [onChange, currentType]
     );
 
     const handleClear = useCallback(() => {
-        onChange({ id: null, type: null });
+        onChange({id: null, type: null});
         setSearch('');
     }, [onChange]);
 
@@ -98,21 +100,35 @@ export function ReferencePost({ value, onChange }) {
 
     return (
         <BaseControl label={__('Reference Post', 'text-domain')}>
-            <Button
-                variant="secondary"
-                onClick={() => setIsOpen((prev) => !prev)}
-                aria-expanded={isOpen}
-            >
-                {selectedLabel}
-            </Button>
-
+            <div style={{display: 'flex', gap: '8px'}}>
+                <Button
+                    variant="secondary"
+                    onClick={() => setIsOpen((prev) => !prev)}
+                    aria-expanded={isOpen}
+                    __next40pxDefaultSize
+                    __nextHasNoMarginBottom
+                    style={{flexGrow: 1}}
+                >
+                    <Icon icon={postContent} />
+                    {[selectedLabel]}
+                </Button>
+                <Button
+                    variant="tertiary"
+                    isDestructive
+                    onClick={handleClear}
+                    __next40pxDefaultSize
+                    __nextHasNoMarginBottom
+                >
+                    {__('Clear', 'AF')}
+                </Button>
+            </div>
             {isOpen && (
                 <Popover
                     placement="bottom-start"
                     onClose={() => setIsOpen(false)}
                     focusOnMount="container"
                 >
-                    <div style={{ padding: '16px', width: '300px', display: 'flex', justifyContent:'flex-start', alignItems: 'center', gap: '8px' }}>
+                    <Grid columns={2} columnGap={15}>
                         <SelectControl
                             label={__('Post Type', 'text-domain')}
                             value={currentType}
@@ -122,7 +138,7 @@ export function ReferencePost({ value, onChange }) {
                             __nextHasNoMarginBottom
                         />
 
-                        {isResolving && <Spinner />}
+                        {isResolving && <Spinner/>}
 
                         <ComboboxControl
                             label={__('Select Post', 'text-domain')}
@@ -133,17 +149,7 @@ export function ReferencePost({ value, onChange }) {
                             __next40pxDefaultSize
                             __nextHasNoMarginBottom
                         />
-
-                        <Button
-                            variant="tertiary"
-                            isDestructive
-                            onClick={handleClear}
-                            __next40pxDefaultSize
-                            __nextHasNoMarginBottom
-                        >
-                            {__('Clear', 'AF')}
-                        </Button>
-                    </div>
+                    </Grid>
                 </Popover>
             )}
         </BaseControl>
